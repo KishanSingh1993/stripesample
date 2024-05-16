@@ -38,20 +38,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         PaymentConfiguration.init(this, PUBLISHABLE_KEY)
-
-        getCustomerId()
-
         stripe = Stripe(applicationContext, PUBLISHABLE_KEY)
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
+
+        getCustomerId()
+
+
     }
 
     private fun paymentFlow() {
 
-        if (customerId == null || ephemeralKey == null || clientSecret == null) {
-            Toast.makeText(this, "Error retrieving payment data", Toast.LENGTH_SHORT).show()
-            return
-        }
         paymentSheet.presentWithPaymentIntent(
             clientSecret,
             PaymentSheet.Configuration(
@@ -62,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
+
 
         Log.d("clientSecret",clientSecret)
     }
@@ -74,11 +72,11 @@ class MainActivity : AppCompatActivity() {
             var res = apiInterface.getCustomer()
             withContext(Dispatchers.Main){
 
-              if(res.isSuccessful && res.body() != null){
-                  customerId = res.body()!!.id
+                if(res.isSuccessful && res.body() != null){
+                    customerId = res.body()!!.id
 
-                  getEphemeralKey(customerId)
-              }
+                    getEphemeralKey(customerId)
+                }
             }
         }
     }
@@ -117,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
+    private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
         // implemented in the next steps
 
         if (paymentSheetResult is PaymentSheetResult.Completed){
